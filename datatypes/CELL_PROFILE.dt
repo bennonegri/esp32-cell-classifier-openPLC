@@ -1,0 +1,10 @@
+TYPE
+  CELL_PROFILE : STRUCT
+    NAME : STRING;
+    OCV_TYP_V : REAL; // typical resting OCV
+    OCV_SIGMA_V : REAL; // 1-sigma OCV spread across charge and brands
+    IR_TYP_OHM : REAL; // typical DC internal resistance at ~1 s
+    IR_SPREAD_K : REAL; // 1-sigma IR spread k: 2 means typ/2 .. typ*2
+    COLOR : RGB; // result colour for the LED
+  END_STRUCT;
+END_TYPE

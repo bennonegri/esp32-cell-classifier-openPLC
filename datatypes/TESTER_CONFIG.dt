@@ -1,0 +1,28 @@
+TYPE
+  TESTER_CONFIG : STRUCT
+    DIVIDER_R_TOP_OHM : REAL := 27000.0; // Vcell -> R_TOP -> ADC pin
+    DIVIDER_R_BOTTOM_OHM : REAL := 39000.0; // ADC pin -> R_BOTTOM -> GND
+    CELL_CAL_GAIN : REAL := 0.9947; // Vcell true / reported, from a DMM check
+    ADC_MAX_PIN_V : REAL := 2.5; // ADC pin volts above this are an over-range fault
+    LOAD_RESISTOR_OHM : REAL := 5.0; // RL; load current = Vload / RL
+    LITHIUM_OCV_THRESHOLD_V : REAL := 2.5; // OCV above this uses the lithium load current
+    AA_LOAD_CURRENT_A : REAL := 0.05; // load current for AA cells
+    LITHIUM_LOAD_CURRENT_A : REAL := 0.1; // load current for lithium cells
+    OCV_SAMPLE_INTERVAL_MS : UDINT := 200; // OCV sample period while settling
+    OCV_STABLE_WINDOW : USINT := 5; // samples per window, 1-10
+    OCV_STABLE_RATE_V_PER_S : REAL := 0.002; // windows this close (2 mV/s) are stable
+    OCV_SETTLE_TIMEOUT_MS : UDINT := 10000; // not stable by now is a fault
+    LOAD_TIME_MS : UDINT := 1000; // load on before the final reading
+    LOAD_CHECK_INTERVAL_MS : UDINT := 50; // fault polling under load
+    CELL_PRESENT_THRESHOLD_V : REAL := 0.5; // above this the divider sees a cell
+    MIN_LOAD_HEADROOM_V : REAL := 0.2; // loaded cell must stay this far above Vload
+    OVER_CURRENT_RATIO : REAL := 1.4; // current above set current x this is a fault
+    FIXTURE_RESISTANCE_OHM : REAL := 0.0; // holder and wiring, subtracted from IR
+    IR_WEIGHT : REAL := 1.0; // weight of the IR term relative to OCV
+    MAX_MATCH_SCORE : REAL := 16.0; // best score above this (~4 sigma) is unknown
+    RESULT_DISPLAY_MS : UDINT := 5000; // result colour on time
+    STATUS_FLASH_HZ : REAL := 3.0; // load on / remove cell
+    FAULT_FLASH_HZ : REAL := 5.0; // fault
+    LED_BRIGHTNESS : USINT := 64; // 0-255, scales all colours
+  END_STRUCT;
+END_TYPE

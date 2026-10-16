@@ -1,0 +1,7 @@
+TYPE
+  RGB : STRUCT
+    R : USINT; // red, 0-255
+    G : USINT; // green, 0-255
+    B : USINT; // blue, 0-255
+  END_STRUCT;
+END_TYPE

@@ -1,0 +1,18 @@
+(* Host stand-ins for the ESP32-C3 C/C++ I/O blocks, with the same
+   interface. Tests write the input image directly. *)
+
+FUNCTION_BLOCK ESP32C3_INPUTS
+VAR_OUTPUT
+  CELL_PIN_V : REAL;
+  LOAD_PIN_V : REAL;
+END_VAR
+END_FUNCTION_BLOCK
+
+FUNCTION_BLOCK ESP32C3_OUTPUTS
+VAR_INPUT
+  LOAD_SET_V : REAL;
+  LED_R : USINT;
+  LED_G : USINT;
+  LED_B : USINT;
+END_VAR
+END_FUNCTION_BLOCK
