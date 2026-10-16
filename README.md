@@ -2,9 +2,10 @@
 
 The [esp32-cell-classifier](https://github.com/bennonegri/esp32-cell-classifier)
 firmware rebuilt as an OpenPLC Editor v4 project. Same circuit, same test
-sequence, same classification and LED states. The logic is in IEC 61131-3
-Structured Text, and two small C/C++ blocks handle the ESP32-C3 hardware
-that OpenPLC's generic I/O can't drive.
+sequence, same classification and LED states. The top-level program is
+ladder logic, the measurement and classification maths are IEC 61131-3
+Structured Text function blocks, and two small C/C++ blocks handle the
+ESP32-C3 hardware that OpenPLC's generic I/O can't drive.
 
 Target board: **ESP32-C3-DevKitM-1** (on-board WS2812 on GPIO 8, USB
 through the on-board USB-UART bridge).
@@ -29,7 +30,7 @@ Result colours: AA Alkaline orange, AA NiMH white, 14500 Li-ion blue,
 
 | Firmware (`src/`, `include/`) | OpenPLC project                                   |
 | ----------------------------- | ------------------------------------------------- |
-| `main.cpp`                    | `pous/programs/main.st`: tester state machine     |
+| `main.cpp`                    | `pous/programs/main.ld`: tester state machine, ladder |
 | `cell_test.cpp`               | `pous/function-blocks/CELL_TEST.st`               |
 | `cell_classifier.cpp`         | `pous/function-blocks/CELL_CLASSIFIER.st`         |
 | `status_led.cpp`              | `pous/function-blocks/STATUS_LED.st`              |
@@ -41,9 +42,29 @@ Result colours: AA Alkaline orange, AA NiMH white, 14500 Li-ion blue,
 `nextSampleTime.st` keeps the sample cadence fixed. The other data types are
 in `datatypes/`. `main` runs every 20 ms on `task0`.
 
-Each scan runs like a PLC: `ESP32C3_INPUTS` reads the input image, the ST
+Each scan runs like a PLC: `ESP32C3_INPUTS` reads the input image, the
 logic runs, and `ESP32C3_OUTPUTS` writes the outputs. The firmware's
 blocking waits became timers checked every scan.
+
+### The ladder program
+
+`main` has 27 rungs, each with a comment, in scan order:
+
+1. **Inputs (rungs 1-4).** Read the clock and the ADC pins, scale the cell
+   voltage through the divider and calibration factor, and set
+   `cellPresent`.
+2. **State machine (rungs 5-15).** Each state is one BOOL bit, switched by
+   set/reset coils: `stReady` (on at boot), `stTesting`, `stResult`,
+   `stRemove` and `stFault`. While `stTesting` is on, its contact powers
+   `CELL_TEST`'s START. When the test is DONE, the rungs log the result
+   and branch: removed → ready, `cellTest.FAULT` → fault, otherwise
+   `CELL_CLASSIFIER` runs → result. A TON holds the result for
+   `CFG.RESULT_DISPLAY_TIME`. Removing the cell from the remove or fault
+   state returns to ready.
+3. **LED (rungs 16-24).** MOVE blocks pick the colour and flash rate for
+   the active state, then `STATUS_LED` runs.
+4. **Outputs (rungs 25-27).** Pass the load setpoint only while testing,
+   and write the output image.
 
 ## Hardware
 
@@ -116,8 +137,9 @@ watch in the debugger:
 | `LAST_SET_CURRENT_MA`, `LAST_LOAD_CURRENT_MA` | requested and measured current |
 | `LAST_IR_MOHM`, `LAST_SCORE` | internal resistance and match score            |
 
-The live state is in `state`, `cellV`, `loadV` and the `cellTest` and
-`classifier` instances.
+The live state is in the `st*` bits, `cellV`, `cellPresent`, `loadV` and
+the `cellTest` and `classifier` instances. Contacts and coils on the
+rungs highlight live in the debugger.
 
 ## Differences from the firmware
 
@@ -137,9 +159,15 @@ The live state is in `state`, `cellV`, `loadV` and the `cellTest` and
 
 `tests/` holds unit tests for every ST block and end-to-end tests that run
 `main` against a simulated cell, divider and load (normal results, unknown
-cell, faults, removal mid-test). They use the test runner built into
-[STruC++](https://github.com/Autonomy-Logic/STruCpp), the compiler OpenPLC
-Editor v4 uses. On the host, `tests/host/` replaces the two C/C++ blocks.
+cell, faults, removal mid-test, exactly one state bit set). They use the
+test runner built into [STruC++](https://github.com/Autonomy-Logic/STruCpp),
+the compiler OpenPLC Editor v4 uses. On the host, `tests/host/` replaces
+the two C/C++ blocks.
+
+`main` is ladder, so its tests run on the Structured Text the editor
+transpiles it to. Build the project in the editor first (any target);
+`run_tests.sh` takes `PROGRAM main` from the newest `build/*/src/program.st`.
+Without a build newer than `main.ld`, it skips `test_main.st`.
 
 ```sh
 # Needs strucpp on PATH, or pass its path as the first argument.

@@ -37,6 +37,7 @@ VAR_OUTPUT
   LOADING : BOOL; // load step in progress
   LOAD_SET_V : REAL; // voltage to hold across RL, 0 = load off
   STATUS : TEST_STATUS;
+  FAULT : BOOL; // finished on a fault (any status but TS_OK or TS_CELL_REMOVED)
   OCV_V : REAL; // stable OCV, or last reading on a fault
   SETTLE_MS : UDINT; // time spent waiting for a stable OCV
   SET_CURRENT_A : REAL; // requested load current, 0 if the load never ran
@@ -78,6 +79,7 @@ ELSE
     LOADING := FALSE;
     LOAD_SET_V := 0.0;
     STATUS := TS_OK;
+    FAULT := FALSE;
     OCV_V := 0.0;
     SETTLE_MS := 0;
     SET_CURRENT_A := 0.0;
@@ -185,6 +187,7 @@ ELSE
   IF NOT running AND BUSY THEN
     BUSY := FALSE;
     DONE := TRUE;
+    FAULT := STATUS <> TS_OK AND STATUS <> TS_CELL_REMOVED;
     LOADING := FALSE;
     LOAD_SET_V := 0.0;
   END_IF;

@@ -28,6 +28,7 @@ END_VAR
   ASSERT_TRUE(t.DONE);
   ASSERT_FALSE(t.BUSY);
   ASSERT_TRUE(t.STATUS = TS_OK);
+  ASSERT_FALSE(t.FAULT);
   (* 10 samples at 200 ms intervals, then a 1 s load step. *)
   ASSERT_EQ(t.SETTLE_MS, 1800);
   ASSERT_EQ(now, 2800);
@@ -132,6 +133,7 @@ END_VAR
     now := now + 20;
   END_FOR;
   ASSERT_TRUE(t.STATUS = TS_CELL_REMOVED);
+  ASSERT_FALSE(t.FAULT);
   ASSERT_EQ(now, 600);
 END_TEST
 
@@ -180,6 +182,7 @@ END_VAR
     now := now + 20;
   END_FOR;
   ASSERT_TRUE(t.STATUS = TS_OVER_CURRENT);
+  ASSERT_TRUE(t.FAULT);
   ASSERT_NEAR(t.LOAD_CURRENT_A, 0.1, 0.0001);
   ASSERT_EQ(t.LOAD_SET_V, 0.0);
 END_TEST

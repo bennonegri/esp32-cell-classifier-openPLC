@@ -1,9 +1,0 @@
-TYPE
-  TESTER_STATE : (
-    ST_READY,
-    ST_TESTING,
-    ST_RESULT,
-    ST_REMOVE,
-    ST_FAULT
-  );
-END_TYPE

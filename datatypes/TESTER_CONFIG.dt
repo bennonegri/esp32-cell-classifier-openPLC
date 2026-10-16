@@ -20,7 +20,7 @@ TYPE
     FIXTURE_RESISTANCE_OHM : REAL := 0.0; // holder and wiring, subtracted from IR
     IR_WEIGHT : REAL := 1.0; // weight of the IR term relative to OCV
     MAX_MATCH_SCORE : REAL := 16.0; // best score above this (~4 sigma) is unknown
-    RESULT_DISPLAY_MS : UDINT := 5000; // result colour on time
+    RESULT_DISPLAY_TIME : TIME := T#5s; // result colour on time
     STATUS_FLASH_HZ : REAL := 3.0; // load on / remove cell
     FAULT_FLASH_HZ : REAL := 5.0; // fault
     LED_BRIGHTNESS : USINT := 64; // 0-255, scales all colours
