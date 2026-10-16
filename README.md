@@ -6,6 +6,9 @@ sequence, same classification and LED states. The logic is in IEC 61131-3
 Structured Text, and two small C/C++ blocks handle the ESP32-C3 hardware
 that OpenPLC's generic I/O can't drive.
 
+Target board: **ESP32-C3-DevKitM-1** (on-board WS2812 on GPIO 8, USB
+through the on-board USB-UART bridge).
+
 The tester waits for a cell, measures its open-circuit voltage (OCV) and
 internal resistance (IR), classifies the chemistry and shows the state on
 the on-board LED:
@@ -75,9 +78,12 @@ nothing, so their variables can be forced from the debugger.
 1. Install [OpenPLC Editor](https://autonomylogic.com/) v4 with the
    Espressif (ESP32) board package.
 2. Open this folder as a project.
-3. In **Device**, select the ESP32-C3 board and its serial port. The
-   project is saved with the board name `ESP32-C3`. If the package names
-   the board differently, select it from the list instead.
+3. In **Device**, select the `ESP32-C3` board and the DevKitM-1's serial
+   port. The DevKitM-1 has no board entry of its own: it builds as the
+   arduino-esp32 "ESP32C3 Dev Module" (`esp32:esp32:esp32c3`), which is
+   what OpenPLC's ESP32-C3 entry uses. If the package names the board
+   differently, pick its ESP32-C3 entry. The OpenPLC debugger talks over
+   the same USB port the firmware's serial log used.
 4. Keep the **pin mapping table empty** (it is empty in this project). The
    HAL configures every mapped pin at boot, which would clash with GPIO 1,
    2, 3 and 8. If you add I/O, use other pins.
