@@ -1,5 +1,7 @@
 {
   "deviceBoard": "ESP32-C3",
   "communicationPort": "",
-  "selectedPlatformOptions": {}
+  "selectedPlatformOptions": {
+    "CDCOnBoot": "default"
+  }
 }
