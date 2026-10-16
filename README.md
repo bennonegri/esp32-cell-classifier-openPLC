@@ -105,10 +105,31 @@ nothing, so their variables can be forced from the debugger.
    what OpenPLC's ESP32-C3 entry uses. If the package names the board
    differently, pick its ESP32-C3 entry. The OpenPLC debugger talks over
    the same USB port the firmware's serial log used.
-4. Keep the **pin mapping table empty** (it is empty in this project). The
+4. Set **USB CDC On Boot** to **Disabled** if the Device screen offers it.
+   The DevKitM-1's micro-USB port goes to its USB-UART bridge (UART0); with
+   CDC on, OpenPLC's debugger talks on the C3's native USB pins instead and
+   never answers on that port.
+5. Keep the **pin mapping table empty** (it is empty in this project). The
    HAL configures every mapped pin at boot, which would clash with GPIO 1,
    2, 3 and 8. If you add I/O, use other pins.
-5. Build and upload.
+6. Build and upload. The editor can't connect to the board until this
+   upload has succeeded; before that it reports "No OpenPLC firmware
+   answered".
+
+### Windows: `bits/error_constants.h: No such file or directory`
+
+The ESP32-C3 compiler can't open headers whose full path is longer than
+Windows' 260-character limit, and under
+`%APPDATA%\open-plc-editor\arduino\data` its deepest C++ headers come within
+a few characters of it. Move OpenPLC's Arduino data folder somewhere short:
+
+1. Close OpenPLC Editor.
+2. Move the folder (PowerShell):
+   `Move-Item "$env:APPDATA\open-plc-editor\arduino\data" C:\opa`
+3. In `%APPDATA%\open-plc-editor\User\arduino-cli.yaml`, change the
+   `data:` line under `directories:` to `data: C:/opa`. The editor keeps a
+   value you set there.
+4. Reopen the editor and build again.
 
 ## Tuning
 
